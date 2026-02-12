@@ -1,0 +1,10 @@
+Copying files from ./static to ./public
+Directory ./public already exists. Deleting contents...
+Directory contents:
+images
+index.css
+Directory ./static/images is a file? False
+Directory contents:
+tolkien.png
+Copying ./static/images/tolkien.png to ./public/images/tolkien.png
+Copying ./static/index.css to ./public/index.css
