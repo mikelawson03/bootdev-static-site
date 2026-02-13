@@ -21,6 +21,29 @@ def markdown_to_blocks(markdown):
     filtered_blocks.append(block.strip())
   return filtered_blocks
 
+def markdown_to_html_node(markdown):
+  blocks = markdown_to_blocks(markdown)
+  children = []
+  for block in blocks:
+    html_node = block_to_html_node(block)
+    children.append(html_node)
+  return ParentNode("div", children, None)
+
+def block_to_html_node(block):
+  block_type = block_to_block_type(block)
+  if block_type == BlockType.HEADING:
+    return get_heading_node(block)
+  if block_type == BlockType.CODE:
+    return get_code_node(block)
+  if block_type == BlockType.QUOTE:
+    return get_quote_node(block)
+  if block_type == BlockType.ORDERED_LIST:
+    return get_ol_node(block)
+  if block_type == BlockType.UNORDERED_LIST:
+    return get_ul_node(block)
+  if block_type == BlockType.PARAGRAPH:
+    return get_p_node(block)
+
 def block_to_block_type(block):
   if re.match(r'^#{1,6}\s+.*$', block):
     return BlockType.HEADING
@@ -35,99 +58,63 @@ def block_to_block_type(block):
   else:
     return BlockType.PARAGRAPH
 
-def text_to_children(block, block_type):
-  if block_type == BlockType.CODE:
-    return (block_type, [TextNode(block, TextType.CODE)])
-  if block_type == BlockType.PARAGRAPH:
-    block = block.replace('\n', ' ')
-  nodes = text_to_textnodes(block)
-  return (block_type, nodes)
-  
-
-def get_parent_tag(block_node):
-  block_type = block_node[0]
-  if block_type == BlockType.UNORDERED_LIST:
-    return "ul"
-  if block_type == BlockType.ORDERED_LIST:
-    return "ol"
-  if block_type == BlockType.PARAGRAPH:
-    return "p"
-
-def get_leaf_nodes(nodes):
-  leaf_nodes = []
-  for node in nodes:
-    leaf_nodes.append(text_node_to_html_node(node))
-  return leaf_nodes
+def text_to_children(text):
+  text_nodes = text_to_textnodes(text)
+  children = []
+  for text_node in text_nodes:
+    html_node = text_node_to_html_node(text_node)
+    children.append(html_node)
+  return children
     
-def get_code_node(block_node):
-  node_text = block_node[1][0].text.replace("```", "").lstrip()
-  leaf_nodes = [LeafNode("code", node_text)]
-  return("pre", leaf_nodes)
+def get_heading_node(block):
+  match = re.match(r'^(#){1,6}', block)
+  h = len(match.group(0))
+  text = block[h + 1:]
+  children = text_to_children(text)
+  return ParentNode(f"h{h}", children)
 
+def get_code_node(block):
+  if not block.startswith("```") or not block.endswith("```"):
+    raise ValueError(f"Invalid code block")
+  text = block[4:-3]
+  text_node = TextNode(text, TextType.TEXT)
+  child = text_node_to_html_node(text_node)
+  code = ParentNode("code", [child])
+  return(ParentNode("pre", [code]))
 
-def get_heading_node(block_node):
-  match = re.match(r'^(#){1,6}', block_node[1][0].text)
-  tag = f"h{len(match.group(0))}"
-  block_node[1][0].text = block_node[1][0].text.replace(match.group(0), "").lstrip()
-  leaf_nodes = get_leaf_nodes(block_node[1])
-  return (tag, leaf_nodes)
+def get_quote_node(block):
+  lines = block.split("\n")
+  new_lines = []
+  for line in lines:
+    if not line.startswith(">"):
+      raise ValueError("invalid block quote")
+    new_lines.append(line.lstrip(">").strip())
+  content = " ".join(new_lines)
+  children = text_to_children(content)
+  return ParentNode("blockquote", children)
 
-def get_quote_node(block_node):
-  leaf_nodes = []
-  block_node[1][0].text = block_node[1][0].text.replace(">", "").strip()
-  for node in block_node[1]:
-    leaf_nodes.append(text_node_to_html_node(node))
-  return ("blockquote", leaf_nodes)
+def get_ul_node(block):
+  html_items = []
+  items = block.split("\n")
+  for item in items:
+    children = text_to_children(item[2:]) 
+    html_items.append(ParentNode("li", children))
+  return ParentNode("ul", html_items)
 
-def get_ul_node(block_node):
-  leaf_nodes = []
-  nodes = block_node[1][0].text.split("-")
-  for node in nodes:
-    if node != "":
-      leaf_nodes.append(LeafNode("li", node.strip()))
-  return("ul", leaf_nodes)
+def get_ol_node(block):
+  html_items = []
+  items = block.split("\n")
+  for item in items:
+    match = re.match(r'^([0-9].\s)', item)
+    text = item.replace(match.group(0), "").strip()
+    if text != "":
+      children = text_to_children(text)
+      html_items.append(ParentNode("li", children))
+  return ParentNode("ol", html_items)
 
-def get_ol_node(block_node):
-  leaf_nodes = []
-  nodes = block_node[1][0].text.split("\n")
-  for node in nodes:
-    match = re.match(r'^([0-9].\s)', node)
-    node = node.replace(match.group(0), "").strip()
-    if node != "":
-      leaf_nodes.append(LeafNode("li", node))
-  return("ol", leaf_nodes)
-
-def get_p_node(block_node):
-  leaf_nodes = []
-  nodes = block_node[1]
-  for node in nodes:
-    leaf_nodes.append(text_node_to_html_node(node))
-  return("p", leaf_nodes)
-
-
-def markdown_to_html_node(markdown):
-  blocks = markdown_to_blocks(markdown)
-  text_nodes = []
-  block_nodes = []
-  html_string = ""
-  for block in blocks:
-    block_type = block_to_block_type(block)
-    text_nodes.append(text_to_children(block, block_type))
-  for block_node in text_nodes:
-    node_type = block_node[0]
-    tag = ""
-    children = ""
-    if node_type == BlockType.CODE:
-      tag, children = get_code_node(block_node)
-    if node_type == BlockType.HEADING:
-      tag, children = get_heading_node(block_node)
-    elif node_type == BlockType.QUOTE:
-      tag, children = get_quote_node(block_node)
-    elif node_type == BlockType.UNORDERED_LIST:
-      tag, children = get_ul_node(block_node)
-    elif node_type == BlockType.ORDERED_LIST:
-      tag, children = get_ol_node(block_node)
-    elif node_type == BlockType.PARAGRAPH:
-      tag, children = get_p_node(block_node)
-    block_nodes.append(ParentNode(tag, children))
-  return ParentNode("div", block_nodes)
+def get_p_node(block):
+  html_items = []
+  lines = block.split("\n")
+  paragraph = " ".join(lines)
+  children = text_to_children(paragraph)
+  return ParentNode("p", children)

@@ -18,8 +18,6 @@ def copy_static_to_public(src, dest):
       with open("log.txt", "a") as f:
         f.write(f"Copying {file_path} to {dest_path}\n")
       shutil.copy(file_path, dest_path)
-      
-      
 
 def clear_dest_path(dest):
   if os.path.exists(dest):
