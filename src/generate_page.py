@@ -14,7 +14,7 @@ def extract_title(markdown):
   else:
     raise Exception("H1 required in markdown and none was found")
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
   generate_message = f"Generating page from {from_path} to dest_path using {template_path}\n"
   with open("log.txt", "a") as f:
     f.write(generate_message)
@@ -29,12 +29,12 @@ def generate_page(from_path, template_path, dest_path):
     template = f.read()
   html_string = markdown_to_html_node(md).to_html()
   title = extract_title(md)
-  template = template.replace("{{ Title }}", title).replace("{{ Content }}", html_string)
+  template = template.replace("{{ Title }}", title).replace("{{ Content }}", html_string).replace('href="/', 'href="{basepath}').replace('src="/', 'src="{basepath}')
   index_path = os.path.join(dest_path, "index.html")
   with open(index_path, "w") as f:
     f.write(template)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
   src_files = os.listdir(dir_path_content)
   dest_file_path = dest_dir_path
   with open("log.txt", "a") as f:
@@ -46,14 +46,12 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
       dest_file_path = os.path.join(dest_dir_path, file)
       with open("log.txt", "a") as f:
         f.write(f"Path {src_file_path} is a directory. Checking contents...\n")
-        generate_pages_recursive(src_file_path, template_path, dest_file_path)
+        generate_pages_recursive(src_file_path, template_path, dest_file_path, basepath)
     elif not src_file_path.endswith(".md"):
       with open("log.txt", "a") as f:
         f.write(f"File {src_file_path} is not a valid markdown file")
         raise Exception(f"Invalid markdown file: {src_file_path}")
     else:
       with open("log.txt", "a") as f:
-        f.write(f"MD file found. Calling generate_page({src_file_path}, {template_path}, {dest_dir_path})\n")
-      generate_page(src_file_path, template_path, dest_file_path)
-    
-generate_pages_recursive(dir_path_content, template_path, dest_dir_path)
+        f.write(f"MD file found. Calling generate_page({src_file_path}, {template_path}, {dest_dir_path}, {basepath})\n")
+      generate_page(src_file_path, template_path, dest_file_path, basepath)

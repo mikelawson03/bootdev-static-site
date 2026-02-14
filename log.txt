@@ -1,5 +1,5 @@
-Copying files from ./static to ./public
-Directory ./public already exists. Deleting contents...
+Copying files from ./static to ./docs
+Directory ./docs already exists. Deleting contents...
 Directory contents:
 images
 index.css
@@ -9,16 +9,16 @@ glorfindel.png
 tolkien.png
 tom.png
 rivendell.png
-Copying ./static/images/glorfindel.png to ./public/images/glorfindel.png
-Copying ./static/images/tolkien.png to ./public/images/tolkien.png
-Copying ./static/images/tom.png to ./public/images/tom.png
-Copying ./static/images/rivendell.png to ./public/images/rivendell.png
-Copying ./static/index.css to ./public/index.css
+Copying ./static/images/glorfindel.png to ./docs/images/glorfindel.png
+Copying ./static/images/tolkien.png to ./docs/images/tolkien.png
+Copying ./static/images/tom.png to ./docs/images/tom.png
+Copying ./static/images/rivendell.png to ./docs/images/rivendell.png
+Copying ./static/index.css to ./docs/index.css
 Generating HTMLLooking for MD files in ./contentDirectory contents: 
 index.md
 blog
 contact
-MD file found. Calling generate_page(./content/index.md, ./template.html, ./public)
+MD file found. Calling generate_page(./content/index.md, ./template.html, ./docs, /bootdev-static-site/)
 Generating page from ./content/index.md to dest_path using ./template.html
 Looking for MD files in ./content/blogDirectory contents: 
 tom
@@ -26,26 +26,26 @@ majesty
 glorfindel
 Looking for MD files in ./content/blog/tomDirectory contents: 
 index.md
-MD file found. Calling generate_page(./content/blog/tom/index.md, ./template.html, ./public/blog/tom)
+MD file found. Calling generate_page(./content/blog/tom/index.md, ./template.html, ./docs/blog/tom, /bootdev-static-site/)
 Generating page from ./content/blog/tom/index.md to dest_path using ./template.html
-Directory ./public/blog/tom does not yet exist. Creating...
+Directory ./docs/blog/tom does not yet exist. Creating...
 Path ./content/blog/tom is a directory. Checking contents...
 Looking for MD files in ./content/blog/majestyDirectory contents: 
 index.md
-MD file found. Calling generate_page(./content/blog/majesty/index.md, ./template.html, ./public/blog/majesty)
+MD file found. Calling generate_page(./content/blog/majesty/index.md, ./template.html, ./docs/blog/majesty, /bootdev-static-site/)
 Generating page from ./content/blog/majesty/index.md to dest_path using ./template.html
-Directory ./public/blog/majesty does not yet exist. Creating...
+Directory ./docs/blog/majesty does not yet exist. Creating...
 Path ./content/blog/majesty is a directory. Checking contents...
 Looking for MD files in ./content/blog/glorfindelDirectory contents: 
 index.md
-MD file found. Calling generate_page(./content/blog/glorfindel/index.md, ./template.html, ./public/blog/glorfindel)
+MD file found. Calling generate_page(./content/blog/glorfindel/index.md, ./template.html, ./docs/blog/glorfindel, /bootdev-static-site/)
 Generating page from ./content/blog/glorfindel/index.md to dest_path using ./template.html
-Directory ./public/blog/glorfindel does not yet exist. Creating...
+Directory ./docs/blog/glorfindel does not yet exist. Creating...
 Path ./content/blog/glorfindel is a directory. Checking contents...
 Path ./content/blog is a directory. Checking contents...
 Looking for MD files in ./content/contactDirectory contents: 
 index.md
-MD file found. Calling generate_page(./content/contact/index.md, ./template.html, ./public/contact)
+MD file found. Calling generate_page(./content/contact/index.md, ./template.html, ./docs/contact, /bootdev-static-site/)
 Generating page from ./content/contact/index.md to dest_path using ./template.html
-Directory ./public/contact does not yet exist. Creating...
+Directory ./docs/contact does not yet exist. Creating...
 Path ./content/contact is a directory. Checking contents...
