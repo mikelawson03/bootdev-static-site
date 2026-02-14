@@ -29,7 +29,7 @@ def generate_page(from_path, template_path, dest_path, basepath):
     template = f.read()
   html_string = markdown_to_html_node(md).to_html()
   title = extract_title(md)
-  template = template.replace("{{ Title }}", title).replace("{{ Content }}", html_string).replace('href="/', 'href="{basepath}').replace('src="/', 'src="{basepath}')
+  template = template.replace("{{ Title }}", title).replace("{{ Content }}", html_string).replace('href="/', f'href="{basepath}').replace('src="/', f'src="{basepath}')
   index_path = os.path.join(dest_path, "index.html")
   with open(index_path, "w") as f:
     f.write(template)
